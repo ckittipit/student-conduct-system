@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  VIEWER
+}
+
+enum GradeLevel {
+  M1
+  M2
+  M3
+  M4
+  M5
+  M6
+}
+
+enum RemarkCategory {
+  CONFESSION
+  PROBATION
+  WITHDRAWN
+}
+
+model User {
+  id        String @id @default(cuid())
+  email     String @unique
+  name      String?
+  image     String?
+  googleId  String? @unique
+  role      Role @default(TEACHER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conductRecords ConductRecord[]
+  bonusRecords   BonusRecord[]
+
+  @@map("users")
+}
+
+model Student {
+  id           String   @id @default(cuid())
+  studentCode  String   @unique
+  firstName    String
+  lastName     String
+  imageUrl     String?
+  currentGrade GradeLevel
+  totalPoints  Int      @default(100)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  conductRecords ConductRecord[]
+  bonusRecords   BonusRecord[]
+
+  @@index([studentCode])
+  @@index([firstName, lastName])
+  @@map("students")
+}
+
+model ConductType {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+  order       Int @default(0)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items ConductItem[]
+
+  @@map("conduct_types")
+}
+
+model ConductItem {
+  id             String   @id @default(cuid())
+  conductTypeId  String
+  name           String
+  pointDeduction Int
+  description    String?
+  order          Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  conductType ConductType @relation(fields: [conductTypeId], references: [id], onDelete: Cascade)
+  conductRecords ConductRecord[]
+
+  @@index([conductTypeId])
+  @@map("conduct_items")
+}
+
+model ConductRecord {
+  id             String   @id @default(cuid())
+  studentId      String
+  conductItemId  String
+  recordedById   String
+  pointsDeducted Int
+  remarkCategory RemarkCategory?
+  note           String?
+  evidenceUrl    String?
+  recordedAt     DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  student     Student     @relation(fields: [studentId], references: [id])
+  conductItem ConductItem @relation(fields: [conductItemId], references: [id])
+  recordedBy  User        @relation(fields: [recordedById], references: [id])
+
+  @@index([studentId])
+  @@index([recordedAt])
+  @@map("conduct_records")
+}
+
+model BonusRecord {
+  id           String   @id @default(cuid())
+  studentId    String
+  recordedById String
+  title        String
+  pointsAdded  Int
+  note         String?
+  recordedAt   DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  student    Student @relation(fields: [studentId], references: [id])
+  recordedBy User    @relation(fields: [recordedById], references: [id])
+
+  @@index([studentId])
+  @@index ([recordedAt])
+  @@map("bonus_records")
+}
