@@ -46,7 +46,7 @@ export class StudentsController {
     }
 
     @Delete(':id')
-    @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN, Role.TEACHER)
     @ApiOperation({ summary: 'ลบนักเรียน (soft delete)' })
     remove(@Param('id') id: string) {
         return this.studentsService.remove(id);
