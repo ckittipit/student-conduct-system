@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+.next/
+build/
+
+# Prisma
+*.db
+
+# Editor
+.DS_Store
+.vscode/settings.json
+*.log
