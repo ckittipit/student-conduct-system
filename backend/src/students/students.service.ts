@@ -82,4 +82,12 @@ export class StudentsService {
             data: { isActive: false },
         });
     }
+
+    async updateImage(id: string, imageUrl: string) {
+        await this.findOne(id);
+        return this.prisma.student.update({
+            where: { id },
+            data: { imageUrl },
+        });
+    }
 }

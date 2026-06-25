@@ -210,3 +210,31 @@ export function useDeleteConductItem(typeId: string) {
 			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
 	})
 }
+
+export function useUploadEvidence(recordId: string, studentId: string) {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (file: File) => {
+			const formData = new FormData()
+			formData.append('file', file)
+
+			return fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/conduct-records/${recordId}/evidence`,
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${session?.accessToken}`,
+					},
+					body: formData,
+				},
+			).then((r) => r.json())
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['conduct-records', studentId],
+			})
+		},
+	})
+}

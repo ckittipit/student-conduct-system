@@ -1,7 +1,10 @@
+import { useRef } from 'react'
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Student } from '@/types'
+import { useUploadStudentImage } from '@/hooks/use-students'
+import { Camera } from 'lucide-react'
 
 const gradeLabel: Record<string, string> = {
 	M1: 'ม.1',
@@ -29,22 +32,54 @@ function PointsDisplay({ points }: { points: number }) {
 }
 
 export function StudentProfile({ student }: { student: Student }) {
+	const fileRef = useRef<HTMLInputElement>(null)
+	const uploadImage = useUploadStudentImage(student.id)
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (file) uploadImage.mutate(file)
+	}
+
 	return (
 		<Card>
 			<CardContent className='p-6 flex flex-col sm:flex-row items-center gap-6'>
-				{student.imageUrl && student.imageUrl.startsWith('http') ? (
-					<Image
-						src={student.imageUrl}
-						alt={student.firstName}
-						width={100}
-						height={100}
-						className='rounded-full object-cover'
+				{/* รูปนักเรียน + ปุ่ม upload */}
+				<div className='relative group'>
+					{student.imageUrl && student.imageUrl.startsWith('http') ? (
+						<Image
+							src={student.imageUrl}
+							alt={student.firstName}
+							width={100}
+							height={100}
+							className='rounded-full object-cover'
+						/>
+					) : (
+						<div className='w-[100px] h-[100px] rounded-full bg-slate-200 flex items-center justify-center text-4xl font-bold text-slate-500'>
+							{student.firstName.charAt(0)}
+						</div>
+					)}
+					{/* Overlay ปุ่ม upload */}
+					<button
+						onClick={() => fileRef.current?.click()}
+						className='absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'
+					>
+						<Camera className='h-6 w-6 text-white' />
+					</button>
+					<input
+						ref={fileRef}
+						type='file'
+						accept='image/*'
+						className='hidden'
+						onChange={handleFileChange}
 					/>
-				) : (
-					<div className='w-[100px] h-[100px] rounded-full bg-slate-200 flex items-center justify-center text-4xl font-bold text-slate-500'>
-						{student.firstName.charAt(0)}
-					</div>
-				)}
+					{uploadImage.isPending && (
+						<div className='absolute inset-0 rounded-full bg-black/50 flex items-center justify-center'>
+							<span className='text-white text-xs'>
+								กำลังอัปโหลด...
+							</span>
+						</div>
+					)}
+				</div>
 
 				<div className='flex-1 text-center sm:text-left space-y-2'>
 					<h2 className='text-2xl font-bold'>

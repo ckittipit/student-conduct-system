@@ -104,3 +104,31 @@ export function useDeleteStudent() {
 		},
 	})
 }
+
+export function useUploadStudentImage(id: string) {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (file: File) => {
+			const formData = new FormData()
+			formData.append('file', file)
+
+			return fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/students/${id}/image`,
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${session?.accessToken}`,
+					},
+					body: formData,
+					// ไม่ใส่ Content-Type — browser จะใส่ boundary ให้อัตโนมัติ
+				},
+			).then((r) => r.json())
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['students', id] })
+			queryClient.invalidateQueries({ queryKey: ['students'] })
+		},
+	})
+}

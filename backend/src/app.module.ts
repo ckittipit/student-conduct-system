@@ -7,6 +7,7 @@ import { StudentsModule } from './students/students.module';
 import { ConductTypesModule } from './conduct-types/conduct-types.module';
 import { ConductRecordsModule } from './conduct-records/conduct-records.module';
 import { BonusRecordsModule } from './bonus-records/bonus-records.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BonusRecordsModule } from './bonus-records/bonus-records.module';
     ConductTypesModule,
     ConductRecordsModule,
     BonusRecordsModule,
+    CloudinaryModule
   ],
 })
 export class AppModule {}

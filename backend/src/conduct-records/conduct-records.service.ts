@@ -114,4 +114,14 @@ export class ConductRecordsService {
 
         return { message: 'ลบบันทึกและคืนคะแนนเรียบร้อย' };
     }
+
+    async updateEvidence(id: string, evidenceUrl: string) {
+        const record = await this.prisma.conductRecord.findUnique({ where: { id } });
+        if (!record) throw new NotFoundException('ไม่พบบันทึกความผิด');
+        return this.prisma.conductRecord.update({
+            where: { id },
+            data: { evidenceUrl },
+        });
+    }
+
 }
