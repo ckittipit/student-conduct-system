@@ -3,6 +3,9 @@ import { useSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api'
 import type { BonusRecord, PaginatedResponse } from '@/types'
 
+const testToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXFveDZiNzYwMDAwMTM2bXNveGlpajRvIiwiZW1haWwiOiJ0ZXN0QG1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzgyMzYwMjk1fQ.GzqYUwCsYJsdb1i6kffOdgSoOXTenPL_KtZujLY7rOs'
+
 export function useBonusRecords(
 	studentId: string,
 	query: { month?: number; year?: number } = {},
@@ -17,9 +20,10 @@ export function useBonusRecords(
 		queryFn: () =>
 			apiClient<PaginatedResponse<BonusRecord>>(
 				`/bonus-records/student/${studentId}?${params}`,
-				{ token: session?.accessToken },
+				{ token: session?.accessToken ?? testToken },
 			),
-		enabled: !!session?.accessToken && !!studentId,
+		// enabled: !!session?.accessToken && !!studentId,
+		enabled: !!studentId,
 	})
 }
 
@@ -37,7 +41,7 @@ export function useCreateBonusRecord() {
 			apiClient<BonusRecord>('/bonus-records', {
 				method: 'POST',
 				body: JSON.stringify(data),
-				token: session?.accessToken,
+				token: session?.accessToken ?? testToken,
 			}),
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({

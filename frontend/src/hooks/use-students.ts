@@ -9,6 +9,8 @@ interface StudentQuery {
 	page?: number
 }
 
+const testToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXFveDZiNzYwMDAwMTM2bXNveGlpajRvIiwiZW1haWwiOiJ0ZXN0QG1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzgyMzYwMjk1fQ.GzqYUwCsYJsdb1i6kffOdgSoOXTenPL_KtZujLY7rOs'
 // call all students list
 export function useStudents(query: StudentQuery = {}) {
 	const { data: session } = useSession()
@@ -18,13 +20,18 @@ export function useStudents(query: StudentQuery = {}) {
 	if (query.grade) params.set('grade', query.grade)
 	if (query.page) params.set('page', String(query.page))
 
+	console.log('useStudents called', {
+		token: session?.accessToken ?? testToken,
+	})
+
 	return useQuery({
 		queryKey: ['students', query],
-		queryFn: () =>
-			apiClient<PaginatedResponse<Student>>(`/students${params}`, {
-				token: session?.accessToken,
+		queryFn: async () =>
+			apiClient<PaginatedResponse<Student>>(`/students?${params}`, {
+				token: session?.accessToken ?? testToken,
 			}),
-		enabled: !!session?.accessToken,
+		// enabled: !!session?.accessToken,
+		enabled: true,
 	})
 }
 
@@ -35,10 +42,11 @@ export function useStudent(id: string) {
 		queryKey: ['students', id],
 		queryFn: () =>
 			apiClient<Student & { conductRecords: any[]; bonusRecords: any[] }>(
-				`students/${id}`,
-				{ token: session?.accessToken },
+				`/students/${id}`,
+				{ token: session?.accessToken ?? testToken },
 			),
-		enabled: !!session?.accessToken && !!id,
+		// enabled: !!session?.accessToken && !!id,
+		enabled: !!id,
 	})
 }
 

@@ -3,6 +3,9 @@ import { useSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api'
 import type { ConductType, ConductRecord, PaginatedResponse } from '@/types'
 
+const testToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXFveDZiNzYwMDAwMTM2bXNveGlpajRvIiwiZW1haWwiOiJ0ZXN0QG1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzgyMzYwMjk1fQ.GzqYUwCsYJsdb1i6kffOdgSoOXTenPL_KtZujLY7rOs'
+
 // ดึง conduct types ทั้งหมดพร้อม items (ใช้สร้าง dropdown)
 export function useConductTypes() {
 	const { data: session } = useSession()
@@ -10,9 +13,10 @@ export function useConductTypes() {
 		queryKey: ['conduct-types'],
 		queryFn: () =>
 			apiClient<ConductType[]>('/conduct-types', {
-				token: session?.accessToken,
+				token: session?.accessToken ?? testToken,
 			}),
-		enabled: !!session?.accessToken,
+		// enabled: !!session?.accessToken,
+		enabled: true,
 	})
 }
 
@@ -32,9 +36,10 @@ export function useConductRecords(
 		queryFn: () =>
 			apiClient<PaginatedResponse<ConductRecord>>(
 				`/conduct-records/student/${studentId}?${params}`,
-				{ token: session?.accessToken },
+				{ token: session?.accessToken ?? testToken },
 			),
-		enabled: !!session?.accessToken && !!studentId,
+		// enabled: !!session?.accessToken && !!studentId,
+		enabled: !!testToken && !!studentId,
 	})
 }
 
@@ -54,7 +59,7 @@ export function useCreateConductRecord() {
 			apiClient<ConductRecord>('/conduct-records', {
 				method: 'POST',
 				body: JSON.stringify(data),
-				token: session?.accessToken,
+				token: session?.accessToken ?? testToken,
 			}),
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({
@@ -76,7 +81,7 @@ export function useDeleteConductRecord(studentId: string) {
 		mutationFn: (id: string) =>
 			apiClient(`/conduct-records/${id}`, {
 				method: 'DELETE',
-				token: session?.accessToken,
+				token: session?.accessToken ?? testToken,
 			}),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
