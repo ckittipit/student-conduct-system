@@ -2,9 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { apiClient } from '@/lib/api'
 import type { ConductType, ConductRecord, PaginatedResponse } from '@/types'
+import { string } from 'zod'
 
-const testToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXFveDZiNzYwMDAwMTM2bXNveGlpajRvIiwiZW1haWwiOiJ0ZXN0QG1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzgyMzYwMjk1fQ.GzqYUwCsYJsdb1i6kffOdgSoOXTenPL_KtZujLY7rOs'
+// const testToken =
+// 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXFveDZiNzYwMDAwMTM2bXNveGlpajRvIiwiZW1haWwiOiJ0ZXN0QG1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzgyMzYwMjk1fQ.GzqYUwCsYJsdb1i6kffOdgSoOXTenPL_KtZujLY7rOs'
 
 // ดึง conduct types ทั้งหมดพร้อม items (ใช้สร้าง dropdown)
 export function useConductTypes() {
@@ -13,10 +14,10 @@ export function useConductTypes() {
 		queryKey: ['conduct-types'],
 		queryFn: () =>
 			apiClient<ConductType[]>('/conduct-types', {
-				token: session?.accessToken ?? testToken,
+				token: session?.accessToken,
 			}),
-		// enabled: !!session?.accessToken,
-		enabled: true,
+		enabled: !!session?.accessToken,
+		// enabled: true,
 	})
 }
 
@@ -36,10 +37,10 @@ export function useConductRecords(
 		queryFn: () =>
 			apiClient<PaginatedResponse<ConductRecord>>(
 				`/conduct-records/student/${studentId}?${params}`,
-				{ token: session?.accessToken ?? testToken },
+				{ token: session?.accessToken },
 			),
-		// enabled: !!session?.accessToken && !!studentId,
-		enabled: !!testToken && !!studentId,
+		enabled: !!session?.accessToken && !!studentId,
+		// enabled: !!testToken && !!studentId,
 	})
 }
 
@@ -59,7 +60,7 @@ export function useCreateConductRecord() {
 			apiClient<ConductRecord>('/conduct-records', {
 				method: 'POST',
 				body: JSON.stringify(data),
-				token: session?.accessToken ?? testToken,
+				token: session?.accessToken,
 			}),
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({
@@ -81,7 +82,7 @@ export function useDeleteConductRecord(studentId: string) {
 		mutationFn: (id: string) =>
 			apiClient(`/conduct-records/${id}`, {
 				method: 'DELETE',
-				token: session?.accessToken ?? testToken,
+				token: session?.accessToken,
 			}),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
@@ -89,5 +90,123 @@ export function useDeleteConductRecord(studentId: string) {
 			})
 			queryClient.invalidateQueries({ queryKey: ['students', studentId] })
 		},
+	})
+}
+
+//------Manage conduct types------
+export function useCreateConductType() {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (data: {
+			name: string
+			description?: string
+			order?: number
+		}) =>
+			apiClient('/conduct-types', {
+				method: 'POST',
+				body: JSON.stringify(data),
+				token: session?.accessToken,
+			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
+	})
+}
+
+export function useUpdateConductType() {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: ({
+			id,
+			...data
+		}: {
+			id: string
+			name?: string
+			order?: number
+		}) =>
+			apiClient(`/conduct-types/${id}`, {
+				method: 'PATCH',
+				body: JSON.stringify(data),
+				token: session?.accessToken,
+			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
+	})
+}
+
+export function useDeleteConductType() {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (id: string) =>
+			apiClient(`/conduct-types/${id}`, {
+				method: 'DELETE',
+				token: session?.accessToken,
+			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
+	})
+}
+
+// -----Manage Conduct Items-----
+export function useCreateConductItem(typeId: string) {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (data: {
+			name: string
+			pointDeduction: number
+			order?: number
+		}) =>
+			apiClient(`/conduct-types/${typeId}/items`, {
+				method: 'POST',
+				body: JSON.stringify(data),
+				token: session?.accessToken,
+			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
+	})
+}
+
+export function useUpdateConductItem(typeId: string) {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: ({
+			id,
+			...data
+		}: {
+			id: string
+			name?: string
+			pointDeduction?: number
+		}) =>
+			apiClient(`/conduct-types/${typeId}/items/${id}`, {
+				method: 'PATCH',
+				body: JSON.stringify(data),
+				token: session?.accessToken,
+			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
+	})
+}
+
+export function useDeleteConductItem(typeId: string) {
+	const { data: session } = useSession()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (itemId: string) =>
+			apiClient(`/conduct-types/${typeId}/items/${itemId}`, {
+				method: 'DELETE',
+				token: session?.accessToken,
+			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ['conduct-types'] }),
 	})
 }
