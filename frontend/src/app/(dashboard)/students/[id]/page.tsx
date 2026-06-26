@@ -79,8 +79,8 @@ export default function StudentDetailPage() {
 					<ConductHistory
 						records={conductData?.data ?? []}
 						studentId={id}
-						month={month?.toString()}
-						year={year?.toString()}
+						month={month}
+						year={year}
 						onMonthChange={setMonth}
 						onYearChange={setYear}
 					/>

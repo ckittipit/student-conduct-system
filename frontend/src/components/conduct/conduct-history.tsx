@@ -25,8 +25,8 @@ const remarkLabel: Record<string, string> = {
 interface Props {
 	records: ConductRecord[]
 	studentId: string
-	month?: string
-	year?: string
+	month?: number
+	year?: number
 	onMonthChange: (v: number | undefined) => void
 	onYearChange: (v: number | undefined) => void
 }
