@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Student Conduct System — Frontend
 
-## Getting Started
+Next.js 14 (App Router) dashboard for managing student conduct points: viewing/creating students, recording conduct violations and bonus points, and managing conduct categories. Installable as a PWA.
 
-First, run the development server:
+## Tech Stack
+
+- [Next.js 14](https://nextjs.org/) (App Router, TypeScript)
+- [NextAuth.js v5](https://authjs.dev/) (Google OAuth login)
+- [TanStack Query](https://tanstack.com/query) for server state
+- [shadcn/ui](https://ui.shadcn.com/) + Radix UI + Tailwind CSS
+- React Hook Form + Zod for forms/validation
+- `next-pwa` for offline/installable support
+
+## Requirements
+
+- Node.js 18+
+- The [backend API](../backend/README.md) running and reachable
+
+## Setup
 
 ```bash
+npm install
+# create a .env.local file (see Environment Variables below)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs on `http://localhost:3000` by default.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description |
+| --- | --- |
+| `NEXTAUTH_URL` | Public URL of this app (e.g. `http://localhost:3000`) |
+| `NEXTAUTH_SECRET` | Secret used by NextAuth to sign session tokens |
+| `NEXT_PUBLIC_API_URL` | Base URL of the backend API (e.g. `http://localhost:4000/api/v1`) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev      # start dev server
+npm run build    # production build
+npm run start    # run production build
+npm run lint     # next lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── login/            # Google sign-in page
+│   ├── (dashboard)/      # Protected dashboard routes (students, conduct-types, ...)
+│   └── api/              # NextAuth route handlers
+├── components/
+│   ├── students/         # Student list/detail/create UI
+│   ├── conduct/          # Conduct record UI
+│   ├── bonus/            # Bonus record UI
+│   ├── layout/           # Shells, nav
+│   ├── shared/           # Reusable cross-feature components
+│   └── ui/               # shadcn/ui primitives
+├── hooks/                 # use-students, use-conduct, use-bonus (TanStack Query hooks)
+├── lib/                   # api client, utils
+├── auth.ts                # NextAuth configuration
+└── middleware.ts           # Route protection
+```
 
-## Deploy on Vercel
+## Authentication
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Login is handled via Google OAuth through NextAuth.js (`src/auth.ts`). Authenticated requests to the backend API are made with the resulting session token; `src/middleware.ts` guards dashboard routes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## PWA
+
+The app uses `next-pwa` for offline support and installability, configured in `next.config.mjs`. This has been toggled on/off during recent deploy debugging — check `next.config.mjs` for current status before assuming it's active.
+
+## Deployment
+
+Configured for Vercel. Cloudinary image domains are whitelisted via `images.remotePatterns` in `next.config.mjs`.

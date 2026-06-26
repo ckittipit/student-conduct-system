@@ -46,8 +46,8 @@ export function BonusHistory({
 			) : (
 				records.map((record) => (
 					<Card key={record.id}>
-						<CardContent className='p-4 flex items-start justify-between gap-4'>
-							<div className='space-y-1 flex-1'>
+						<CardContent className='p-4 flex flex-col sm:flex-row items-start justify-between gap-4'>
+							<div className='space-y-1 flex-1 min-w-0'>
 								<p className='font-medium'>{record.title}</p>
 								<Badge className='bg-green-500'>
 									+{record.pointsAdded} คะแนน
@@ -68,7 +68,7 @@ export function BonusHistory({
 									{' . '}บันทึกโดย {record.recordedBy.name}
 								</p>
 							</div>
-							<div className='flex- gap-1'>
+							<div className='flex gap-1 self-end sm:self-auto'>
 								<Button
 									variant='ghost'
 									size='icon'

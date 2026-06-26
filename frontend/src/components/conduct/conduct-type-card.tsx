@@ -70,8 +70,8 @@ function ConductItemRow({
 	const deleteItem = useDeleteConductItem(typeId)
 
 	return (
-		<div className='flex items-center gap-3 py-2 border-b last:border-0'>
-			<div className='flex-1'>
+		<div className='flex flex-wrap items-center gap-3 py-2 border-b last:border-0'>
+			<div className='flex-1 min-w-[120px]'>
 				{editing ? (
 					<InlineEdit
 						value={item.name}
@@ -88,7 +88,7 @@ function ConductItemRow({
 				)}
 			</div>
 
-			<div className='w-24'>
+			<div className='shrink-0'>
 				{editPoints ? (
 					<Input
 						type='number'
@@ -116,7 +116,7 @@ function ConductItemRow({
 				)}
 			</div>
 
-			<div className='flex gap-1'>
+			<div className='flex gap-1 shrink-0'>
 				<Button
 					size='icon'
 					variant='ghost'
@@ -159,12 +159,12 @@ function AddItemRow({ typeId }: { typeId: string }) {
 	}
 
 	return (
-		<div className='flex items-center gap-2 mt-2'>
+		<div className='flex flex-wrap items-center gap-2 mt-2'>
 			<Input
 				placeholder='ชื่อความผิด'
 				value={name}
 				onChange={(e) => setName(e.target.value)}
-				className='h-8 text-sm flex-1'
+				className='h-8 text-sm flex-1 min-w-[120px]'
 				autoFocus
 			/>
 			<Input
@@ -213,8 +213,8 @@ export function ConductTypeCard({ type }: Props) {
 
 	return (
 		<Card>
-			<CardHeader className='pb-3 flex flex-row items-center justify-between'>
-				<div className='flex-1'>
+			<CardHeader className='pb-3 flex flex-row items-center justify-between gap-2'>
+				<div className='flex-1 min-w-0'>
 					{editingName ? (
 						<InlineEdit
 							value={type.name}

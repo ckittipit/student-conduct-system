@@ -34,7 +34,7 @@ export function StudentSearch({
 	onGradeChange,
 }: Props) {
 	return (
-		<div className='flex gap-3'>
+		<div className='flex flex-col sm:flex-row gap-3'>
 			<div className='relative flex-1'>
 				<Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
 				<Input
@@ -48,7 +48,7 @@ export function StudentSearch({
 				value={grade}
 				onValueChange={onGradeChange}
 			>
-				<SelectTrigger className='w-36'>
+				<SelectTrigger className='w-full sm:w-36'>
 					<SelectValue placeholder='ทุกชั้น' />
 				</SelectTrigger>
 				<SelectContent>

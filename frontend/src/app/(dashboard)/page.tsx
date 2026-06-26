@@ -26,7 +26,7 @@ export default function HomePage() {
 
 	return (
 		<div className='space-y-6'>
-			<div className='flex items-center justify-between'>
+			<div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
 				<div>
 					<h1 className='text-2xl font-bold'>นักเรียนทั้งหมด</h1>
 					<p className='text-muted-foreground text-sm mt-1'>
@@ -34,7 +34,10 @@ export default function HomePage() {
 					</p>
 				</div>
 				{(isAdmin || isTeacher) && (
-					<Button onClick={() => setShowAdd(true)}>
+					<Button
+						onClick={() => setShowAdd(true)}
+						className='w-full sm:w-auto'
+					>
 						<UserPlus className='mr-2 h-4 w-4' />
 						เพิ่มนักเรียน
 					</Button>
@@ -55,7 +58,7 @@ export default function HomePage() {
 			/>
 
 			{isLoading ? (
-				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+				<div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
 					{Array.from({ length: 8 }).map((_, i) => (
 						<Skeleton
 							key={i}
@@ -65,7 +68,7 @@ export default function HomePage() {
 				</div>
 			) : (
 				<>
-					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+					<div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
 						{data?.data.map((student) => (
 							<StudentCard
 								key={student.id}

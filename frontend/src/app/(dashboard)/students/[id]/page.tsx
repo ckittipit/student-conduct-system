@@ -48,16 +48,17 @@ export default function StudentDetailPage() {
 			<StudentProfile student={student} />
 
 			{/* Action Button */}
-			<div className='flex gap-3'>
+			<div className='flex flex-col sm:flex-row gap-3'>
 				<Button
 					variant='destructive'
 					onClick={() => setShowConduct(true)}
+					className='w-full sm:w-auto'
 				>
 					<Minus className='mr-2 h-4 w-4' />
 					บันทึกความผิด
 				</Button>
 				<Button
-					className='bg-green-600 hover:bg-green-700'
+					className='bg-green-600 hover:bg-green-700 w-full sm:w-auto'
 					onClick={() => setShowBonus(true)}
 				>
 					<Plus className='mr-2 h-4 w-4' />
@@ -67,7 +68,7 @@ export default function StudentDetailPage() {
 
 			{/* History Tab */}
 			<Tabs defaultValue='conduct'>
-				<TabsList>
+				<TabsList className='w-full sm:w-auto flex-wrap h-auto'>
 					<TabsTrigger value='conduct'>
 						ประวัตืความผิด ({conductData?.meta.total ?? 0})
 					</TabsTrigger>

@@ -160,8 +160,8 @@ export function ConductHistory({
 			) : (
 				records.map((record) => (
 					<Card key={record.id}>
-						<CardContent className='p-4 flex items-start justify-between gap-4'>
-							<div className='space-y-1 flex-1'>
+						<CardContent className='p-4 flex flex-col sm:flex-row items-start justify-between gap-4'>
+							<div className='space-y-1 flex-1 min-w-0'>
 								<p className='font-medium'>
 									{record.conductItem?.name}
 								</p>
@@ -190,18 +190,22 @@ export function ConductHistory({
 								</p>
 							</div>
 
-							<EvidenceButton
-								record={record}
-								studentId={studentId}
-							/>
-							<Button
-								variant='ghost'
-								size='icon'
-								className='text-destructive hover:text-destructive'
-								onClick={() => deleteRecord.mutate(record.id)}
-							>
-								<Trash2 className='h-4 w-4' />
-							</Button>
+							<div className='flex gap-1 self-end sm:self-auto'>
+								<EvidenceButton
+									record={record}
+									studentId={studentId}
+								/>
+								<Button
+									variant='ghost'
+									size='icon'
+									className='text-destructive hover:text-destructive'
+									onClick={() =>
+										deleteRecord.mutate(record.id)
+									}
+								>
+									<Trash2 className='h-4 w-4' />
+								</Button>
+							</div>
 						</CardContent>
 					</Card>
 				))

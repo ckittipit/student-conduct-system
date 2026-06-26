@@ -1,98 +1,94 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Student Conduct System — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS REST API for tracking student conduct points: disciplinary records, bonus point rewards, and conduct categories. Uses PostgreSQL via Prisma, JWT auth with Google OAuth login, and Cloudinary for evidence image uploads.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- [NestJS 11](https://nestjs.com/) (TypeScript)
+- [Prisma 5](https://www.prisma.io/) + PostgreSQL
+- Passport: JWT strategy + Google OAuth2 strategy
+- Cloudinary (image uploads)
+- Swagger / OpenAPI docs
+- Helmet, class-validator, @nestjs/throttler
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requirements
 
-## Project setup
+- Node.js >= 20.11.0
+- A PostgreSQL database (see `docker-compose.yml` in the repo root for a local instance)
+
+## Setup
 
 ```bash
-$ npm install
+npm install
+# create a .env file (see Environment Variables below)
+npx prisma migrate deploy   # apply migrations
+npm run start:dev
 ```
 
-## Compile and run the project
+The API listens on `http://localhost:4000` by default, with all routes prefixed under `/api/v1`.
+
+## Environment Variables
+
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | Secret used to sign JWT access tokens |
+| `JWT_EXPIRES_IN` | JWT token expiry (e.g. `1d`) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `BACKEND_URL` | Public URL of this API (used in OAuth callback) |
+| `FRONTEND_URL` | URL of the frontend app (used for CORS) |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary account cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `PORT` | Port to listen on (default `4000`) |
+
+## Scripts
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev      # watch mode
+npm run start:prod      # run compiled build (node dist/src/main)
+npm run build           # nest build
+npm run lint             # eslint --fix
+npm run format           # prettier
+npm run test             # unit tests
+npm run test:e2e         # e2e tests
+npm run test:cov         # coverage
 ```
 
-## Run tests
+## Database
+
+Schema is defined in `prisma/schema.prisma`. Core models:
+
+- **User** — `ADMIN` / `TEACHER` / `VIEWER` roles, Google login, records conduct/bonus entries
+- **Student** — code, name, grade level (M1–M6), `totalPoints` (default 100), active flag
+- **ConductType** / **ConductItem** — categories of violations and their point deductions
+- **ConductRecord** — a logged incident: student, conduct item, recording user, remark category (`CONFESSION` / `PROBATION` / `WITHDRAWN`), optional evidence URL
+- **BonusRecord** — a logged reward: student, recording user, title, points added
 
 ```bash
-# unit tests
-$ npm run test
+npx prisma migrate dev --name <change>   # create a new migration
+npx prisma studio                         # browse data
+```
 
-# e2e tests
-$ npm run test:e2e
+## API Docs
 
-# test coverage
-$ npm run test:cov
+Swagger UI is available at `/api/docs` once the server is running (e.g. `http://localhost:4000/api/docs`).
+
+## Project Structure
+
+```
+src/
+├── auth/             # JWT + Google OAuth strategies, guards
+├── students/         # Student CRUD
+├── conduct-types/     # Manage violation categories/items
+├── conduct-records/   # Record incidents, deduct points
+├── bonus-records/      # Award bonus points
+├── cloudinary/         # Image upload service
+├── prisma/             # Prisma service/module
+└── main.ts             # App bootstrap
 ```
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Configured for Railway. Build with `npm run build`, run with `npm run start:prod`.

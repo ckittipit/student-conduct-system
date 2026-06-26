@@ -11,7 +11,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LogOut } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 
 interface HeaderProps {
 	user: {
@@ -20,6 +20,7 @@ interface HeaderProps {
 		image?: string | null
 		role: string
 	}
+	onMenuClick?: () => void
 }
 
 const roleLabel: Record<string, string> = {
@@ -28,10 +29,16 @@ const roleLabel: Record<string, string> = {
 	VIEWER: 'ผู้ชม',
 }
 
-export function Header({ user }: HeaderProps) {
+export function Header({ user, onMenuClick }: HeaderProps) {
 	return (
-		<header className='h-16 bg-white border-b flex items-center justify-between px-6'>
-			<div />
+		<header className='h-16 bg-white border-b flex items-center justify-between px-4 sm:px-6'>
+			<button
+				onClick={onMenuClick}
+				className='md:hidden text-muted-foreground hover:text-foreground'
+				aria-label='เปิดเมนู'
+			>
+				<Menu className='h-6 w-6' />
+			</button>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button
@@ -47,7 +54,7 @@ export function Header({ user }: HeaderProps) {
 								className='rounded-full'
 							/>
 						)}
-						<div className='text-left'>
+						<div className='text-left hidden sm:block'>
 							<p className='text-sm font-medium'>{user.name}</p>
 							<p className='text-xs text-muted-foreground'>
 								{roleLabel[user.role]}

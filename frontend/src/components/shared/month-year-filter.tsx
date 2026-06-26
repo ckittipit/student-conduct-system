@@ -40,14 +40,14 @@ export function MonthYearFilter({
 	onYearChange,
 }: Props) {
 	return (
-		<div className='flex gap-3'>
+		<div className='flex flex-col sm:flex-row gap-3'>
 			<Select
 				value={month ? String(month) : ''}
 				onValueChange={(v: string) =>
 					onMonthChange(v ? Number(v) : undefined)
 				}
 			>
-				<SelectTrigger className='w-40'>
+				<SelectTrigger className='w-full sm:w-40'>
 					<SelectValue placeholder='ทุกเดือน'></SelectValue>
 				</SelectTrigger>
 				<SelectContent>
@@ -69,7 +69,7 @@ export function MonthYearFilter({
 					onYearChange(v ? Number(v) : undefined)
 				}
 			>
-				<SelectTrigger className='w-32'>
+				<SelectTrigger className='w-full sm:w-32'>
 					<SelectValue placeholder='ทุกปี' />
 				</SelectTrigger>
 				<SelectContent>
