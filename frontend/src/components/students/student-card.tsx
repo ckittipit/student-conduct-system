@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Student } from '@/types'
-import { cn } from '@/lib/utils'
+// import { cn } from '@/lib/utils'
 
 const gradeLabel: Record<string, string> = {
 	M1: 'ม.1',

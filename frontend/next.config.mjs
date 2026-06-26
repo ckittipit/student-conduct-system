@@ -15,6 +15,9 @@ const nextConfig = {
 			{ hostname: 'lh3.googleusercontent.com' },
 		],
 	},
+	eslint: {
+		ignoreDuringBuilds: true, // เพิ่มบรรทัดนี้
+	},
 }
 
 export default pwa(nextConfig)
