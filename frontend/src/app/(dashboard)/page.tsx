@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserPlus } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { redirect } from 'next/navigation'
 
 export default function HomePage() {
+	redirect('/students')
 	const { data: session } = useSession()
 	const [search, setSearch] = useState('')
 	const [grade, setGrade] = useState('')
