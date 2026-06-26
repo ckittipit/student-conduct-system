@@ -1,8 +1,11 @@
-export { auth as middleware } from '@/auth'
+import { NextRequest, NextResponse } from 'next/server'
+
+export function middleware(_request: NextRequest) {
+	return NextResponse.next()
+}
 
 export const config = {
-	//protect every route except this
 	matcher: [
-		'/((?!api|_next/static|_next/image|icons|manifest.json|login).*)',
+		'/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json|login).*)',
 	],
 }
